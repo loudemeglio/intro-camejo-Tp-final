@@ -37,12 +37,11 @@
                 <div class="slogan">
                     Duerme bien y con estilo
                 </div>
-               <!-- <a class="navbar-brand " href=""><img class="logo-img" src="images/logo3.jpg" alt=""></a>-->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="#">Home</a>
                         </li>
@@ -96,27 +95,42 @@
             </button>
         </div>
 
+        <div class="container">
+        <div class="row">
+            <div class="col text-end ">
+                <h1></h1>
+                <a href="crear/index.html" class="btn btn-secondary">Agregar Producto</a>
+            </div>
+        </div>
+        </div>
+
         <!-- Contenedor para los productos -->
-        <h2 class="title-card">Beds</h2>
+        <h2 class="title-card">Camas</h2>
         <div class="cards-beds-container" id="beds-id">
-            <div class="row" id="productos"></div>
+            <div class="row" id="productos-camas"></div>
+        </div>
+
+        <h2 class="title-card">Almohadones</h2>
+        <div class="cards-beds-container" id="almohadones-id">
+            <div class="row" id="productos-almohadones"></div>
         </div>
 
     </main>
 
     <!-- javascript -->
     <script>
+        
         function response_received(response) {
             return response.json();
         }
 
-        function parse_data(content) {
+        function parse_data(content, containerId) {
             console.log(content);
-            const container = document.getElementById("productos");
+            const container = document.getElementById(containerId);
             container.innerHTML = ""; // Limpiar el contenedor antes de agregar nuevos elementos
             for (let i = 0; i < content.length; i++) {
                 const card = document.createElement("div");
-                card.className = "col-md-3";
+                card.className = "col  md-3";
                 card.innerHTML = `
                     <div class="card" style="width: 18rem;">
                         <img src="${content[i].img}" class="card-img-top" alt="...">
@@ -132,14 +146,21 @@
         }
 
         function request_error(error) {
-            console.log("ERROR");
-            console.log(error);
+            console.log("ERROR", error);
         }
 
-        fetch("http://127.0.0.1:5000/productos/")
-            .then(response_received)
-            .then(parse_data)
-            .catch(request_error);
+        function fetchProductosByCategoria(categoriaId, containerId) {
+            fetch(`http://127.0.0.1:5000/productos/categoria/${categoriaId}`)
+                .then(response_received)
+                .then(content => parse_data(content, containerId))
+                .catch(request_error);
+        }
+
+        // Fetch productos for each category
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchProductosByCategoria(1, "productos-camas");
+            fetchProductosByCategoria(2, "productos-almohadones");
+        });
     </script>
 
 </body>
