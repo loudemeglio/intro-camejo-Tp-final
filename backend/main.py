@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from models import db, Producto, TipoProducto
 
 app = Flask(__name__)
+CORS(app)
 port = 5000
 app.config['SQLALCHEMY_DATABASE_URI']= 'postgresql+psycopg2://lou_dm:lourdes2012@localhost:5432/fairhome'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
@@ -12,24 +14,19 @@ def hello_world():
 
 
 # ---- Todos los productos
-@app.route("/productos/", methods=["GET"])  #devuelve productos
-def productos():
-    try:
-        productos = Producto.query.all()
-        productos_data = []
-        for producto in productos:
-            producto_data = {
-                'id': producto.id,
-                'categoria_id': producto.categoria_id,
-                'color': producto.color,
-                'precio': producto.precio,
-                'descripcion': producto.descripcion,
-                'img': producto.img
-            }
-            productos_data.append(producto_data)
-        return jsonify(productos_data)
-    except:
-        return jsonify({"mensaje": "No hay productos :/"})
+@app.route('/productos/', methods=['GET'])
+def get_productos():
+    productos = Producto.query.all()
+    productos_list = [{'id': p.id, 'descripcion': p.descripcion, 'color': p.color, 'precio': p.precio, 'img': p.img} for p in productos]
+    return jsonify(productos_list)
+
+@app.route('/productos/categoria/<int:categoria_id>', methods=['GET'])
+def get_productos_por_categoria(categoria_id):
+    productos = Producto.query.filter_by(categoria_id=categoria_id).all()
+    productos_list = [{'id': p.id, 'descripcion': p.descripcion, 'color': p.color, 'precio': p.precio, 'img': p.img} for p in productos]
+    return jsonify(productos_list)
+
+
     
 # ---- Un producto
 @app.route("/productos/<id_producto>")
@@ -73,6 +70,7 @@ def crear_producto():
     except:
         return jsonify({"mensaje": "No se pudo crear el producto"})
     
+    
 # ---- Crear Categoria
 @app.route("/categorias", methods=["POST"])
 def crear_categoria():
@@ -89,6 +87,7 @@ def crear_categoria():
                                    'stock':nuevo_tipo.stock}}), 201
     except:
         return jsonify({"mensaje": "No se pudo crear la categoria"})
+
 
 if __name__ == '__main__':
     print('Starting Server...')
