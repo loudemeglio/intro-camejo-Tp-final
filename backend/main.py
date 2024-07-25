@@ -1,10 +1,14 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from models import db, Producto, TipoProducto
+
 
 app = Flask(__name__)
 port = 5000
 app.config['SQLALCHEMY_DATABASE_URI']= 'postgresql+psycopg2://lou_dm:lourdes2012@localhost:5432/fairhome'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
+
+CORS(app)
 
 @app.route('/')
 def hello_world():
@@ -12,10 +16,18 @@ def hello_world():
 
 
 # ---- Todos los productos
-@app.route("/productos/", methods=["GET"])  #devuelve productos
-def productos():
+@app.route('/productos/', methods=['GET'])
+def get_productos():
+    productos = Producto.query.all()
+    productos_list = [{'id': p.id, 'descripcion': p.descripcion, 'color': p.color, 'precio': p.precio, 'img': p.img} for p in productos]
+    return jsonify(productos_list)
+    
+# --- Productos por categoria
+
+@app.route("/productos/categoria/<int:categoria_id>", methods=['GET'])
+def obtener_categorias(categoria_id):
     try:
-        productos = Producto.query.all()
+        productos = Producto.query.filter_by(categoria_id=categoria_id).all()
         productos_data = []
         for producto in productos:
             producto_data = {
@@ -29,7 +41,9 @@ def productos():
             productos_data.append(producto_data)
         return jsonify(productos_data)
     except:
-        return jsonify({"mensaje": "No hay productos :/"})
+        return jsonify("no se pudieron obtener la categoria seleccionada")        
+
+
     
 # ---- Un producto
 @app.route("/productos/<id_producto>")
