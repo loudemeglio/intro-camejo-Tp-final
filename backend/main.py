@@ -5,7 +5,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 port = 5000
-app.config['SQLALCHEMY_DATABASE_URI']= 'postgresql+psycopg2://postgres:postgres@localhost:5432/fairhome'
+app.config['SQLALCHEMY_DATABASE_URI']= 'postgresql+psycopg2://lou_dm:lourdes2012@localhost:5432/fairhome'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 
 CORS(app)
@@ -22,11 +22,7 @@ def get_productos():
     productos_list = [{'id': p.id, 'descripcion': p.descripcion, 'color': p.color, 'precio': p.precio, 'img': p.img} for p in productos]
     return jsonify(productos_list)
 
-@app.route('/productos/categoria/<int:categoria_id>', methods=['GET'])
-def get_productos_por_categoria(categoria_id):
-    productos = Producto.query.filter_by(categoria_id=categoria_id).all()
-    productos_list = [{'id': p.id, 'descripcion': p.descripcion, 'color': p.color, 'precio': p.precio, 'img': p.img} for p in productos]
-    return jsonify(productos_list)
+
 
 
     
