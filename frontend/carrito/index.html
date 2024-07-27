@@ -36,10 +36,10 @@
                   <a class="nav-link active" aria-current="page" href="../index.html">Home</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">About us</a>
+                  <a class="nav-link" href="../login/index.html">Login</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="carrito/index.html" > CART <div class="length_cart" id="cart"></div> </a>
+                  <a class="nav-link" href="#" > CART <div class="length_cart" id="cart"></div> </a>
                 </li>
               </ul>
             </div>
@@ -93,7 +93,7 @@
                             <h5 class="card-title">${content[i].descripcion}</h5>
                             <p class="card-text">Precio total: $${content[i].precio * content[i].cantidad}</p>
                             <p class="card-text">Cantidad: ${content[i].cantidad}</p>
-                            <div class="btn btn-primary"><button onclick="sumar_elemento(${content[i].id})" class="btn btn-secondary">+</button><button onclick="restar_elemento(${content[i].id})" class="btn btn-secondary">-</button></</div>
+                            <div class="btn btn-white"><button onclick="sumar_elemento(${content[i].id})" class="btn btn-secondary-subtle">+</button><button onclick="restar_elemento(${content[i].id})" class="btn btn-secondary-subtle">-</button></</div>
                             <button onclick="eliminar_carrito(${content[i].id})" id="producto-${content[i].id}" class="btn btn-primary">Eliminar Producto</button>
                         </div>
                     </div>
@@ -102,7 +102,6 @@
                 container.append(card);
             }
           }
-
 
 
           function request_error(error) {
@@ -127,11 +126,8 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.mensaje) {
-                    alert(data.mensaje);
+                if (!data.error) {
                     fetchProductosByCategoria("container-carrito");
-                } else if (data.error) {
-                    alert(data.error);
                 }
             })
             .catch(error => console.error("Error:", error));
@@ -147,12 +143,9 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.mensaje) {
-                    alert(data.mensaje);
-                    fetchProductosByCategoria("container-carrito");
-                } else if (data.error) {
-                    alert(data.error);
-                }
+            if (!data.error) {
+                fetchProductosByCategoria("container-carrito");
+            }
             })
             .catch(error => console.error("Error:", error));
 
@@ -161,24 +154,29 @@
 
 
         function eliminar_carrito(id) {
-            fetch("http://127.0.0.1:5000/carrito", {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ producto_id: id })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.mensaje) {
-                    alert(data.mensaje);
-                    fetchProductosByCategoria("container-carrito");
-                } else if (data.error) {
-                    alert(data.error);
-                }
-            })
-            .catch(error => console.error("Error:", error));
+
+            if (confirm("¿Estás seguro de que deseas eliminar este producto del carrito?")) {
+                fetch("http://127.0.0.1:5000/carrito", {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ producto_id: id })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.mensaje) {
+                        fetchProductosByCategoria("container-carrito");
+                    } else if (data.error) {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+            } else {
+                console.log("Eliminación cancelada por el usuario.");
+            }
         }
+
 
         
 

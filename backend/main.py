@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify, session
 from datetime import timedelta
-from models import db, Producto, TipoProducto, Carrito
 from flask_cors import CORS
+from models import db, Producto, TipoProducto, Carrito
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'intro2024'
@@ -16,12 +17,36 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 def fairhome():
     return 'Fairhome'
 
+
 # ---- Todos los productos
 @app.route('/productos/', methods=['GET'])
 def get_productos():
     productos = Producto.query.all()
     productos_list = [{'id': p.id, 'descripcion': p.descripcion, 'color': p.color, 'precio': p.precio, 'img': p.img} for p in productos]
     return jsonify(productos_list)
+
+    
+# --- Productos por categoria
+
+@app.route("/productos/categoria/<int:categoria_id>", methods=['GET'])
+def obtener_categorias(categoria_id):
+    try:
+        productos = Producto.query.filter_by(categoria_id=categoria_id).all()
+        productos_data = []
+        for producto in productos:
+            producto_data = {
+                'id': producto.id,
+                'categoria_id': producto.categoria_id,
+                'color': producto.color,
+                'precio': producto.precio,
+                'descripcion': producto.descripcion,
+                'img': producto.img
+            }
+            productos_data.append(producto_data)
+        return jsonify(productos_data)
+    except:
+        return jsonify("no se pudieron obtener la categoria seleccionada")        
+
 
     
 # ---- Un producto
@@ -43,25 +68,7 @@ def producto(id_producto):
     except:
         return jsonify("Error"), 404
 
-# ---- Filtra por categoria
-@app.route("/productos/categoria/<categoria_id>", methods=['GET'])
-def obtener_categorias(categoria_id):
-    try:
-        productos = Producto.query.filter_by(categoria_id=categoria_id).all()
-        productos_data = []
-        for producto in productos:
-            producto_data = {
-                'id': producto.id,
-                'categoria_id': producto.categoria_id,
-                'color': producto.color,
-                'precio': producto.precio,
-                'descripcion': producto.descripcion,
-                'img': producto.img
-            }
-            productos_data.append(producto_data)
-        return jsonify(productos_data)
-    except:
-        return jsonify("no se pudieron obtener la categoria seleccionada")        
+  
 
 
 
@@ -178,7 +185,6 @@ def eliminar_del_carrito():
     else:
         return jsonify({"error": "Producto no encontrado en el carrito"}), 404
 
-
 # ---- Crear Categoria
 @app.route("/categorias", methods=["POST"])
 def crear_categoria():
@@ -222,6 +228,32 @@ def logout():
     session.pop('logged_in', None)
     return jsonify({'success': True})
 
+
+# ---- Inicio de Sesion 
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    usuario = data.get('usuario')
+    contraseña = data.get('contraseña')
+
+    if usuario == 'administrador' and contraseña == 'intro2024':
+
+        return jsonify({'success': True})
+    else:
+   
+        return jsonify({'message': 'Datos Invalidos'}), 401
+
+@app.route('/api/login_status')
+def login_status():
+    logged_in = session.get('logged_in', False)
+    print(f"Estado de la sesión: {logged_in}") 
+    return jsonify({'logged_in': logged_in})
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    session.pop('logged_in', None)
+    return jsonify({'success': True})
 
 if __name__ == '__main__':
     print('Starting Server...')
