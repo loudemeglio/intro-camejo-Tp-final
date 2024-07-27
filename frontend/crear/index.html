@@ -47,7 +47,6 @@
                                         <option value="1">Camas</option>
                                         <option value="2">Almohadones</option>
                                         <option value="3">Comodas</option>
-                                        <option value="other">Otra</option>
                                     </select>
                                 </div>
 
@@ -112,7 +111,6 @@
             .then((data) => {
                 if (data.producto) {
                     alert("Producto creado exitosamente!");
-                    // Redireccionar a otra página si es necesario
                     window.location.href = `../index.html`;
                 } else {
                     alert("Error al crear el producto");
