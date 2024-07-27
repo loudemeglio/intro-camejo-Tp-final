@@ -82,7 +82,6 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
     <script>
-        
        function crear_producto(event) {
             event.preventDefault()
 
@@ -111,7 +110,8 @@
             .then((data) => {
                 if (data.producto) {
                     alert("Producto creado exitosamente!");
-                    window.location.href = `../index.html`;
+                    // Redireccionar a otra página si es necesario
+                    window.location.href = `/productos/${data.producto.id}`;
                 } else {
                     alert("Error al crear el producto");
                 }

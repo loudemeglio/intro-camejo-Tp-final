@@ -140,11 +140,11 @@
             const container = document.getElementById(containerId);
             container.innerHTML = ""; // Limpiar el contenedor antes de agregar nuevos elementos
             for (let i = 0; i < content.length; i++) {
-                const card = document.createElement("div");
+                const card = document.createElement("div");             
                 card.className = "col  md-3";
                 card.innerHTML = `
                     <div class="card" style="width: 18rem;">
-                        <img src="${content[i].img}" class="card-img-top" alt="...">
+                        <a href="/productos/index.html?id=${content[i].id}"><img src="${content[i].img}" class="card-img-top" alt="..."></a>
                         <div class="card-body">
                             <h5 class="card-title">${content[i].descripcion}</h5>
                             <p class="card-text">Precio: $${content[i].precio}</p>
@@ -152,7 +152,7 @@
                         </div>
                     </div>
                 `;
-                container.append(card);
+                container.append(card);                
             }
         }
 
