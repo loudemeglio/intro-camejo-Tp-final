@@ -1,19 +1,20 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
+from datetime import timedelta
 from models import db, Producto, TipoProducto, Carrito
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+app.config['SECRET_KEY'] = 'intro2024'
+app.permanent_session_lifetime = timedelta(minutes=6)
+CORS(app, origins=["http://localhost:8000"])
 port = 5000
 app.config['SQLALCHEMY_DATABASE_URI']= 'postgresql+psycopg2://lou_dm:lourdes2012@localhost:5432/fairhome'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 
-CORS(app)
 
 @app.route('/')
-def hello_world():
-    return 'Hello world!'
-
+def fairhome():
+    return 'Fairhome'
 
 # ---- Todos los productos
 @app.route('/productos/', methods=['GET'])
@@ -21,9 +22,6 @@ def get_productos():
     productos = Producto.query.all()
     productos_list = [{'id': p.id, 'descripcion': p.descripcion, 'color': p.color, 'precio': p.precio, 'img': p.img} for p in productos]
     return jsonify(productos_list)
-
-
-
 
     
 # ---- Un producto
@@ -92,7 +90,7 @@ def crear_producto():
     except:
         return jsonify({"mensaje": "No se pudo crear el producto"})
 
-
+# ---- Devuelve productos del Carrito
 @app.route("/carrito/", methods=["GET"])  #devuelve productos
 def obtener_carrito():
     try:
@@ -114,6 +112,7 @@ def obtener_carrito():
         return jsonify({"mensaje": "No hay productos :/"})
 
 
+# ---- Agrega un producto al carrito
 
 @app.route("/carrito", methods=["POST"])
 def agregar_carrito():
@@ -136,6 +135,7 @@ def agregar_carrito():
     
     return jsonify({"mensaje": "Producto agregado al carrito"}), 201
 
+# ---- Actualizar la cantidad en el carrito
 @app.route("/carrito", methods=["PUT"])
 def modificar_carrito():
     data = request.get_json()
@@ -161,9 +161,7 @@ def modificar_carrito():
     db.session.commit()
     return jsonify({"mensaje": "Producto agregado al carrito"}), 201
 
-
-
-
+# eliminar producto de carrito
 @app.route("/carrito", methods=["DELETE"])
 def eliminar_del_carrito():
     data = request.get_json()
@@ -176,7 +174,7 @@ def eliminar_del_carrito():
     if item:
         db.session.delete(item)
         db.session.commit()
-        return jsonify({"mensaje": "Producto eliminado del carrito"}), 200
+        return jsonify({"mensaje": "¿Esta seguro de eliminar el producto?"}), 200
     else:
         return jsonify({"error": "Producto no encontrado en el carrito"}), 404
 
@@ -198,6 +196,31 @@ def crear_categoria():
     except:
         return jsonify({"mensaje": "No se pudo crear la categoria"})
     
+# ---- Inicio de Sesion 
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    usuario = data.get('usuario')
+    contraseña = data.get('contraseña')
+
+    if usuario == 'administrador' and contraseña == 'intro2024':
+
+        return jsonify({'success': True})
+    else:
+   
+        return jsonify({'message': 'Datos Invalidos'}), 401
+
+@app.route('/api/login_status')
+def login_status():
+    logged_in = session.get('logged_in', False)
+    print(f"Estado de la sesión: {logged_in}") 
+    return jsonify({'logged_in': logged_in})
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    session.pop('logged_in', None)
+    return jsonify({'success': True})
 
 
 if __name__ == '__main__':
