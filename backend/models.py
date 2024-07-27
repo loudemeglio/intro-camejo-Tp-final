@@ -16,10 +16,6 @@ class Producto(db.Model):
     precio = db.Column(db.Float, nullable=False)
     descripcion = db.Column(db.Text, nullable=False)
     img = db.Column(db.String(255))
-<<<<<<< HEAD
-=======
-    
->>>>>>> origin/frontend
 
 class Carrito(db.Model):
     __tablename__ = 'carrito'

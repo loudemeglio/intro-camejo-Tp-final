@@ -1,28 +1,17 @@
-<<<<<<< HEAD
 from flask import Flask, request, jsonify, session
 from datetime import timedelta
 from flask_cors import CORS
 from models import db, Producto, TipoProducto, Carrito
 
-=======
-from flask import Flask, request, jsonify
-from models import db, Producto, TipoProducto, Carrito
-from flask_cors import CORS
->>>>>>> origin/frontend
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'intro2024'
 app.permanent_session_lifetime = timedelta(minutes=6)
 CORS(app, origins=["http://localhost:8000"])
 port = 5000
-app.config['SQLALCHEMY_DATABASE_URI']= 'postgresql+psycopg2://postgres:postgres@localhost:5432/fairhome'
+app.config['SQLALCHEMY_DATABASE_URI']= 'postgresql+psycopg2://lou_dm:lourdes2012@localhost:5432/fairhome'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 
-<<<<<<< HEAD
-
-=======
-CORS(app)
->>>>>>> origin/frontend
 
 @app.route('/')
 def fairhome():
@@ -78,25 +67,7 @@ def producto(id_producto):
     except:
         return jsonify("Error"), 404
 
-# ---- Filtra por categoria
-@app.route("/productos/categoria/<categoria_id>", methods=['GET'])
-def obtener_categorias(categoria_id):
-    try:
-        productos = Producto.query.filter_by(categoria_id=categoria_id).all()
-        productos_data = []
-        for producto in productos:
-            producto_data = {
-                'id': producto.id,
-                'categoria_id': producto.categoria_id,
-                'color': producto.color,
-                'precio': producto.precio,
-                'descripcion': producto.descripcion,
-                'img': producto.img
-            }
-            productos_data.append(producto_data)
-        return jsonify(productos_data)
-    except:
-        return jsonify("no se pudieron obtener la categoria seleccionada")        
+  
 
 
 
@@ -125,11 +96,7 @@ def crear_producto():
     except:
         return jsonify({"mensaje": "No se pudo crear el producto"})
 
-<<<<<<< HEAD
 # ---- Devuelve productos del Carrito
-=======
-
->>>>>>> origin/frontend
 @app.route("/carrito/", methods=["GET"])  #devuelve productos
 def obtener_carrito():
     try:
@@ -151,10 +118,7 @@ def obtener_carrito():
         return jsonify({"mensaje": "No hay productos :/"})
 
 
-<<<<<<< HEAD
 # ---- Agrega un producto al carrito
-=======
->>>>>>> origin/frontend
 
 @app.route("/carrito", methods=["POST"])
 def agregar_carrito():
@@ -177,10 +141,7 @@ def agregar_carrito():
     
     return jsonify({"mensaje": "Producto agregado al carrito"}), 201
 
-<<<<<<< HEAD
 # ---- Actualizar la cantidad en el carrito
-=======
->>>>>>> origin/frontend
 @app.route("/carrito", methods=["PUT"])
 def modificar_carrito():
     data = request.get_json()
@@ -206,13 +167,7 @@ def modificar_carrito():
     db.session.commit()
     return jsonify({"mensaje": "Producto agregado al carrito"}), 201
 
-<<<<<<< HEAD
 # eliminar producto de carrito
-=======
-
-
-
->>>>>>> origin/frontend
 @app.route("/carrito", methods=["DELETE"])
 def eliminar_del_carrito():
     data = request.get_json()
@@ -225,18 +180,10 @@ def eliminar_del_carrito():
     if item:
         db.session.delete(item)
         db.session.commit()
-<<<<<<< HEAD
         return jsonify({"mensaje": "¿Esta seguro de eliminar el producto?"}), 200
     else:
         return jsonify({"error": "Producto no encontrado en el carrito"}), 404
 
-=======
-        return jsonify({"mensaje": "Producto eliminado del carrito"}), 200
-    else:
-        return jsonify({"error": "Producto no encontrado en el carrito"}), 404
-
-
->>>>>>> origin/frontend
 # ---- Crear Categoria
 @app.route("/categorias", methods=["POST"])
 def crear_categoria():
