@@ -16,4 +16,11 @@ class Producto(db.Model):
     precio = db.Column(db.Float, nullable=False)
     descripcion = db.Column(db.Text, nullable=False)
     img = db.Column(db.String(255))
-     
+
+class Carrito(db.Model):
+    __tablename__ = 'carrito'
+    id = db.Column(db.Integer, primary_key=True)
+    producto_id = db.Column(db.Integer, db.ForeignKey('productos.id'), nullable=False)
+    cantidad = db.Column(db.Integer, nullable=False)
+  
+    producto = db.relationship('Producto', backref=db.backref('carrito_items', lazy=True))
