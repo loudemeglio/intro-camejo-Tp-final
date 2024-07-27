@@ -24,6 +24,7 @@ def get_productos():
     productos = Producto.query.all()
     productos_list = [{'id': p.id, 'descripcion': p.descripcion, 'color': p.color, 'precio': p.precio, 'img': p.img} for p in productos]
     return jsonify(productos_list)
+
     
 # --- Productos por categoria
 
@@ -201,6 +202,32 @@ def crear_categoria():
     except:
         return jsonify({"mensaje": "No se pudo crear la categoria"})
     
+# ---- Inicio de Sesion 
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    usuario = data.get('usuario')
+    contraseña = data.get('contraseña')
+
+    if usuario == 'administrador' and contraseña == 'intro2024':
+
+        return jsonify({'success': True})
+    else:
+   
+        return jsonify({'message': 'Datos Invalidos'}), 401
+
+@app.route('/api/login_status')
+def login_status():
+    logged_in = session.get('logged_in', False)
+    print(f"Estado de la sesión: {logged_in}") 
+    return jsonify({'logged_in': logged_in})
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    session.pop('logged_in', None)
+    return jsonify({'success': True})
+
 
 # ---- Inicio de Sesion 
 
