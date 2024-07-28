@@ -139,22 +139,44 @@
             console.log(content);
             const container = document.getElementById(containerId);
             container.innerHTML = ""; // Limpiar el contenedor antes de agregar nuevos elementos
-            for (let i = 0; i < content.length; i++) {
-                const card = document.createElement("div");             
-                card.className = "col  md-3";
-                card.innerHTML = `
-                    <div class="card" style="width: 18rem;">
-                        <a href="/productos/index.html?id=${content[i].id}"><img src="${content[i].img}" class="card-img-top" alt="..."></a>
-                        <div class="card-body">
-                            <h5 class="card-title">${content[i].descripcion}</h5>
-                            <p class="card-text">Precio: $${content[i].precio}</p>
-                            <button onclick="agregar_carrito(${content[i].id})" id="producto-${content[i].id}" class="btn btn-primary">Add to cart</button>
+
+            if(sessionStorage.getItem('logged_in') === 'true'){
+                for (let i = 0; i < content.length; i++) {
+                    const card = document.createElement("div");             
+                    card.className = "col  md-3";
+                    card.innerHTML = `
+                        <div class="card" style="width: 18rem;">
+                            <a href="/productos/index.html?id=${content[i].id}"><img src="${content[i].img}" class="card-img-top" alt="..."></a>
+                            <div class="card-body">
+                                <h5 class="card-title">${content[i].descripcion}</h5>
+                                <p class="card-text">Precio: $${content[i].precio}</p>
+                                <button onclick="agregar_carrito(${content[i].id})" id="producto-${content[i].id}" class="btn btn-primary">Add to cart</button>
+                                <button onclick="eliminar_producto(${content[i].id})" id="eliminar-${content[i].id}" class="btn-elim btn btn-secondary mt-2 btn-danger">Eliminar producto</button>
+                            </div>
                         </div>
-                    </div>
-                `;
-                container.append(card);                
+                    `;
+                    container.append(card);                
+                }
+            }else{
+                for (let i = 0; i < content.length; i++) {
+                    const card = document.createElement("div");             
+                    card.className = "col  md-3";
+                    card.innerHTML = `
+                        <div class="card" style="width: 18rem;">
+                            <a href="/productos/index.html?id=${content[i].id}"><img src="${content[i].img}" class="card-img-top" alt="..."></a>
+                            <div class="card-body">
+                                <h5 class="card-title">${content[i].descripcion}</h5>
+                                <p class="card-text">Precio: $${content[i].precio}</p>
+                                <button onclick="agregar_carrito(${content[i].id})" id="producto-${content[i].id}" class="btn btn-primary">Add to cart</button>
+                                
+                            </div>
+                        </div>
+                    `;
+                    container.append(card); 
+                
             }
         }
+    }
 
         function request_error(error) {
             console.log("ERROR", error);
@@ -206,29 +228,64 @@
                 .catch(request_error);
         }
 
+        function eliminar_producto(IdProducto ){
+            fetch("http://127.0.0.1:5000/productos", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ producto_id: IdProducto})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    fetchProductosByCategoria(1, "productos-camas");
+                    fetchProductosByCategoria(2, "productos-almohadones");
+                    fetchProductosByCategoria(3, "productos-comodas");
+                    actualizar_cantidad_carrito();
+                }
+            })
+            .catch(error => console.error("Error:", error));  
+
+        }
+        
         // Fetch productos for each category
         document.addEventListener("DOMContentLoaded", function() {
+            
+            
+        });
+
+        
+
+
+
+        function checkLoginStatus() {
+            const loggedIn = sessionStorage.getItem('logged_in') === 'true';
+            if (loggedIn) {
+                // si login es administrador dispone de acciones de administrador
+                document.getElementById('agregar-producto-container').innerHTML = '<a href="crear/index.html" class="btn btn-secondary">Agregar Producto</a>';
+                document.getElementById('logout-link').style.display = 'inline-block';
+                
+                console.log("Bienvenido Administrador");
+            } else {
+                document.getElementById('agregar-producto-container').innerHTML = ''; 
+                document.getElementById('logout-link').style.display = 'none';
+                
+                console.log("Bienvenido.cliente");
+            }
+        }
+
+        // Logica de Login como administrador
+        document.addEventListener('DOMContentLoaded', function() {
             fetchProductosByCategoria(1, "productos-camas");
             fetchProductosByCategoria(2, "productos-almohadones");
             fetchProductosByCategoria(3, "productos-comodas");
             actualizar_cantidad_carrito();
-        });
 
-        // Logica de Login como administrador
-        document.addEventListener('DOMContentLoaded', function() {
-            function checkLoginStatus() {
-                const loggedIn = sessionStorage.getItem('logged_in') === 'true';
-                if (loggedIn) {
-                    // si login es administrador dispone de acciones de administrador
-                    document.getElementById('agregar-producto-container').innerHTML = '<a href="crear/index.html" class="btn btn-secondary">Agregar Producto</a>';
-                    document.getElementById('logout-link').style.display = 'inline-block';
-                    console.log("Bienvenido Administrador");
-                } else {
-                    document.getElementById('agregar-producto-container').innerHTML = ''; 
-                    document.getElementById('logout-link').style.display = 'none';
-                    console.log("Bienvenido.cliente");
-                }
-            }
+
+            
+
+                      
 
             checkLoginStatus();
 

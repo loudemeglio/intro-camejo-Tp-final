@@ -48,7 +48,7 @@
       </header>
       <main>
         <div class="price">
-          <div id="aqui"> precio total: <div class="total">0</div> </div>
+          <div > precio total: <div class="total" id="precio">0</div> </div>
         </div>
 
         <div id="in">
@@ -76,7 +76,7 @@
         }
 
 
-      
+          
 
           function parse_data(content, containerId) {
             console.log(content);
@@ -99,8 +99,10 @@
                     </div>
                  </li>   
                 `;
+
                 container.append(card);
             }
+            
           }
 
 
@@ -108,10 +110,31 @@
             console.log("ERROR", error);
           }
 
-          function fetchProductosByCategoria(containerId) {
+          function pone_precio(content, containerId){
+            console.log(content);
+            var precio = 0;
+            const price = document.getElementById(containerId);
+            price.innerHTML = "";
+            for(let i = 0; i < content.length; i++){
+                precio += (content[i].precio * content[i].cantidad);
+            }
+            console.log(price);
+            price.innerHTML = `${precio}`;
+
+
+        }
+
+          function fetchProductosCarrito(containerId) {
             fetch(`http://127.0.0.1:5000/carrito/`)
                 .then(response_received)
                 .then(content => parse_data(content, containerId))
+                .catch(request_error);
+        }
+
+        function fetchProductosCarrito2(containerId) {
+            fetch(`http://127.0.0.1:5000/carrito/`)
+                .then(response_received)
+                .then(contenido => pone_precio(contenido, containerId))
                 .catch(request_error);
         }
 
@@ -127,10 +150,12 @@
             .then(response => response.json())
             .then(data => {
                 if (!data.error) {
-                    fetchProductosByCategoria("container-carrito");
+                    fetchProductosCarrito("container-carrito");
+                    fetchProductosCarrito2("precio");
                 }
             })
             .catch(error => console.error("Error:", error));
+            
         }
 
         function restar_elemento(id){
@@ -144,12 +169,12 @@
             .then(response => response.json())
             .then(data => {
             if (!data.error) {
-                fetchProductosByCategoria("container-carrito");
+                fetchProductosCarrito("container-carrito");
+                fetchProductosCarrito2("precio");
             }
             })
             .catch(error => console.error("Error:", error));
-
-
+            
         }
 
 
@@ -166,7 +191,8 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.mensaje) {
-                        fetchProductosByCategoria("container-carrito");
+                        fetchProductosCarrito("container-carrito");
+                        fetchProductosCarrito2("precio");
                     } else if (data.error) {
                         alert(data.error);
                     }
@@ -175,14 +201,19 @@
             } else {
                 console.log("Eliminación cancelada por el usuario.");
             }
+            
         }
+
+        
 
 
         
 
           document.addEventListener("DOMContentLoaded", function() {
+            fetchProductosCarrito2("precio");
+            fetchProductosCarrito("container-carrito");
             
-            fetchProductosByCategoria("container-carrito");
+            
             
 
           });
