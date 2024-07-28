@@ -7,9 +7,10 @@ from models import db, Producto, TipoProducto, Carrito
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'intro2024'
 app.permanent_session_lifetime = timedelta(minutes=6)
-CORS(app, origins=["http://localhost:8000"])
+CORS(app)
+
 port = 5000
-app.config['SQLALCHEMY_DATABASE_URI']= 'postgresql+psycopg2://lou_dm:lourdes2012@localhost:5432/fairhome'
+app.config['SQLALCHEMY_DATABASE_URI']= 'postgresql+psycopg2://postgres:postgres@localhost:5432/fairhome'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 
 
@@ -96,6 +97,24 @@ def crear_producto():
                                    'img': nuevo_producto.img}}), 201
     except:
         return jsonify({"mensaje": "No se pudo crear el producto"})
+    
+# ---- Eliminar Producto 
+@app.route("/productos", methods=["DELETE"])
+def eliminar_producto():
+    data = request.get_json()
+    producto_id = data.get('producto_id')
+     
+    
+    if not producto_id:
+        return jsonify({"error"}), 400
+    
+    item = Producto.query.filter_by(id=producto_id).first()
+       
+    db.session.delete(item)
+    db.session.commit()
+    return jsonify({"mensaje": "Producto eliminado del carrito"}), 200
+
+
 
 # ---- Devuelve productos del Carrito
 @app.route("/carrito/", methods=["GET"])  #devuelve productos
@@ -229,31 +248,6 @@ def logout():
     return jsonify({'success': True})
 
 
-# ---- Inicio de Sesion 
-
-@app.route('/api/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    usuario = data.get('usuario')
-    contraseña = data.get('contraseña')
-
-    if usuario == 'administrador' and contraseña == 'intro2024':
-
-        return jsonify({'success': True})
-    else:
-   
-        return jsonify({'message': 'Datos Invalidos'}), 401
-
-@app.route('/api/login_status')
-def login_status():
-    logged_in = session.get('logged_in', False)
-    print(f"Estado de la sesión: {logged_in}") 
-    return jsonify({'logged_in': logged_in})
-
-@app.route('/api/logout', methods=['POST'])
-def logout():
-    session.pop('logged_in', None)
-    return jsonify({'success': True})
 
 if __name__ == '__main__':
     print('Starting Server...')
