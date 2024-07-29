@@ -7,10 +7,9 @@ from models import db, Producto, TipoProducto, Carrito
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'intro2024'
 app.permanent_session_lifetime = timedelta(minutes=6)
-CORS(app)
-
+CORS(app, origins=["http://localhost:8000"])
 port = 5000
-app.config['SQLALCHEMY_DATABASE_URI']= 'postgresql+psycopg2://postgres:postgres@localhost:5432/fairhome'
+app.config['SQLALCHEMY_DATABASE_URI']= 'postgresql+psycopg2://lou_dm:lourdes2012@localhost:5432/fairhome'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 
 
@@ -25,7 +24,6 @@ def get_productos():
     productos = Producto.query.all()
     productos_list = [{'id': p.id, 'descripcion': p.descripcion, 'color': p.color, 'precio': p.precio, 'img': p.img} for p in productos]
     return jsonify(productos_list)
-
     
 # --- Productos por categoria
 
@@ -98,6 +96,7 @@ def crear_producto():
     except:
         return jsonify({"mensaje": "No se pudo crear el producto"})
     
+
 # ---- Eliminar Producto 
 @app.route("/productos", methods=["DELETE"])
 def eliminar_producto():
@@ -113,7 +112,6 @@ def eliminar_producto():
     db.session.delete(item)
     db.session.commit()
     return jsonify({"mensaje": "Producto eliminado del carrito"}), 200
-
 
 
 # ---- Devuelve productos del Carrito
@@ -221,6 +219,7 @@ def crear_categoria():
     except:
         return jsonify({"mensaje": "No se pudo crear la categoria"})
     
+
 # ---- Inicio de Sesion 
 
 @app.route('/api/login', methods=['POST'])
@@ -246,8 +245,6 @@ def login_status():
 def logout():
     session.pop('logged_in', None)
     return jsonify({'success': True})
-
-
 
 if __name__ == '__main__':
     print('Starting Server...')

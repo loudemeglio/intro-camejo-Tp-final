@@ -79,7 +79,7 @@
                 .then(data => {
                     if (data.success) {
                         sessionStorage.setItem('logged_in', 'true');
-                        // Configura el temporizador de expiración
+                    
                         setTimeout(() => {
                             sessionStorage.removeItem('logged_in');
                             window.location.href = '/'; // Redirige a la página de inicio 

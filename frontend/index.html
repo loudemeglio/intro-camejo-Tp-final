@@ -52,6 +52,7 @@
                         <li><a class="dropdown-item" href="/categorias/index.html?categoria_id=1">Camas</a></li>
                         <li><a class="dropdown-item" href="/categorias/index.html?categoria_id=2">Almohadones</a></li>
                         <li><a class="dropdown-item" href="/categorias/index.html?categoria_id=3">Cómodas</a></li>
+                        <li><a class="dropdown-item" href="/categorias/index.html?categoria_id=4">Sofás</a></li>
                         <!-- Añadir más categorías -->
                     </ul>
                 </li>
@@ -67,7 +68,7 @@
             <div class="carousel-inner">
                 <div class="carousel-item active ">
                     <div class="flex-cont ">
-                        <a href="index.html"><img src="images/imagen-7.jpeg" class=" image-carousel " alt="...">
+                        <a href="#almohadones-id"><img src="images/imagen-7.jpeg" class=" image-carousel " alt="...">
                             <div class="centrado centrado-text"> Almohadones </div>
                         </a>
                     </div>
@@ -82,7 +83,7 @@
                 </div>
                 <div class="carousel-item">
                     <div class="flex-cont">
-                        <a href="">
+                        <a href="#comodas-id">
                             <img src="images/imagen-10.jpeg" class=" image-carousel  " alt="...">
                             <div class="centrado centrado-text"> Cómodas </div>
                         </a>
@@ -122,6 +123,11 @@
         <div class="cards-beds-container" id="comodas-id">
             <div class="row" id="productos-comodas"></div>
         </div>
+
+        <h2 class="title-card">Sofás</h2>
+        <div class="cards-beds-container" id="sofas-id">
+            <div class="row" id="productos-sofas"></div>
+        </div>
         
         <div class="logout-container">
             <a href="#" id="logout-link" class="btn btn-danger" style="display: none;">Logout</a>
@@ -150,7 +156,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">${content[i].descripcion}</h5>
                                 <p class="card-text">Precio: $${content[i].precio}</p>
-                                <button onclick="agregar_carrito(${content[i].id})" id="producto-${content[i].id}" class="btn btn-primary">Add to cart</button>
+                                <button onclick="agregar_carrito(${content[i].id})" id="producto-${content[i].id}" class="btn btn-primary">Agregar al carrito</button>
                                 <button onclick="eliminar_producto(${content[i].id})" id="eliminar-${content[i].id}" class="btn-elim btn btn-secondary mt-2 btn-danger">Eliminar producto</button>
                             </div>
                         </div>
@@ -167,7 +173,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">${content[i].descripcion}</h5>
                                 <p class="card-text">Precio: $${content[i].precio}</p>
-                                <button onclick="agregar_carrito(${content[i].id})" id="producto-${content[i].id}" class="btn btn-primary">Add to cart</button>
+                                <button onclick="agregar_carrito(${content[i].id})" id="producto-${content[i].id}" class="btn btn-primary">Agregar al carrito</button>
                                 
                             </div>
                         </div>
@@ -242,6 +248,7 @@
                     fetchProductosByCategoria(1, "productos-camas");
                     fetchProductosByCategoria(2, "productos-almohadones");
                     fetchProductosByCategoria(3, "productos-comodas");
+                    fetchProductosByCategoria(4, "productos-sofas");
                     actualizar_cantidad_carrito();
                 }
             })
@@ -280,6 +287,7 @@
             fetchProductosByCategoria(1, "productos-camas");
             fetchProductosByCategoria(2, "productos-almohadones");
             fetchProductosByCategoria(3, "productos-comodas");
+            fetchProductosByCategoria(4, "productos-sofas");
             actualizar_cantidad_carrito();
 
 
